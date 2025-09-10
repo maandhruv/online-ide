@@ -5,22 +5,10 @@
   "constraints": "1 <= n <= 1e5, -1e9 <= ai, target <= 1e9",
   "runner_type": "io",
   "public_tests": [
-    {
-      "input": "4\n2 7 11 15\n9\n",
-      "output": "0 1\n",
-      "timeout_ms": 2000
-    },
-    {
-      "input": "5\n1 2 3 4 5\n100\n",
-      "output": "-1 -1\n",
-      "timeout_ms": 2000
-    }
+    { "input": "4\n2 7 11 15\n9\n", "output": "0 1\n", "timeout_ms": 2000 },
+    { "input": "5\n1 2 3 4 5\n100\n", "output": "-1 -1\n", "timeout_ms": 2000 }
   ],
   "private_tests": [
-    {
-      "input": "6\n3 3 4 5 6 7\n6\n",
-      "output": "0 1\n",
-      "timeout_ms": 2000
-    }
+    { "input": "6\n3 3 4 5 6 7\n6\n", "output": "0 1\n", "timeout_ms": 2000 }
   ]
 }

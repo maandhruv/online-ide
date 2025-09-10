@@ -1,10 +1,32 @@
 services:
-  backend:
+  api:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: dsa-ide-backend
+    container_name: dsa-ide-api
+    environment:
+      - REDIS_URL=redis://redis:6379/0
     ports:
       - "8000:8000"
+    depends_on:
+      - redis
+
+  runner:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: dsa-ide-runner
+    environment:
+      - REDIS_URL=redis://redis:6379/0
+    # the runner needs Docker access to spawn sandbox containers
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
+    command: ["python", "runner.py"]
+    depends_on:
+      - redis
+
+  redis:
+    image: redis:7
+    container_name: dsa-ide-redis
+    ports:
+      - "6379:6379"

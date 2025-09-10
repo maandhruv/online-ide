@@ -2,7 +2,7 @@
 
 import React from "react";
 import Editor from "@monaco-editor/react";
-import { fetchProblem, runSample, submitAll } from "./api-client";
+import { fetchProblem, enqueueRun, fetchResult } from "./api-client";
 
 const STARTER = `# Implement solve() reading stdin and printing result.
 # Input:
@@ -49,29 +49,34 @@ export default function Page() {
       .catch((e) => setErr(String(e)));
   }, []);
 
+  async function pollResult(id: string) {
+    while (true) {
+      const res = await fetchResult(id);
+      if (res.status === "DONE") return res;
+      await new Promise(r => setTimeout(r, 800)); // 0.8s poll
+    }
+  }
+
   async function onRun() {
     setLoading(true); setErr(null); setResult(null);
     try {
-      const r = await runSample(code);
-      setResult(r);
-    } catch (e: any) {
-      setErr(e.message || String(e));
-    } finally {
-      setLoading(false);
-    }
+      const { submission_id } = await enqueueRun(code, "public");
+      const final = await pollResult(submission_id);
+      setResult({ verdict: final.verdict, results: final.results });
+    } catch (e: any) { setErr(e.message || String(e)); }
+    finally { setLoading(false); }
   }
 
   async function onSubmit() {
     setLoading(true); setErr(null); setResult(null);
     try {
-      const r = await submitAll(code);
-      setResult(r);
-    } catch (e: any) {
-      setErr(e.message || String(e));
-    } finally {
-      setLoading(false);
-    }
+      const { submission_id } = await enqueueRun(code, "all");
+      const final = await pollResult(submission_id);
+      setResult({ verdict: final.verdict, results: final.results });
+    } catch (e: any) { setErr(e.message || String(e)); }
+    finally { setLoading(false); }
   }
+
 
   return (
     <main style={{ maxWidth: 1000, margin: "20px auto", padding: 16 }}>

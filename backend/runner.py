@@ -1,0 +1,41 @@
+import json, time, os, redis
+import judge
+
+REDIS_URL = os.environ.get("REDIS_URL", "redis://redis:6379/0")
+r = redis.Redis.from_url(REDIS_URL, decode_responses=True)
+
+def run_once():
+    # BLPOP blocks until a job arrives
+    item = r.blpop("queue:runs", timeout=5)  # tuple(queue, data) or None
+    if not item:
+        return  # idle
+    _, data = item
+    job = json.loads(data)
+    sub_id = job["id"]; kind = job["kind"]; code = job["source_code"]
+
+    try:
+        problem = judge.load_problem()
+        tests = problem["public_tests"] if kind == "public" else (problem["public_tests"] + problem["private_tests"])
+        result = judge.judge_io(code, tests)
+        # store DONE
+        r.hset(f"result:{sub_id}", mapping={
+            "status": "DONE",
+            "verdict": result["verdict"],
+            "results": json.dumps(result["results"])
+        })
+    except Exception as e:
+        r.hset(f"result:{sub_id}", mapping={
+            "status": "DONE",
+            "verdict": "ERROR",
+            "results": json.dumps([{"test_index": -1, "status": "RTE", "stdout": "", "stderr": str(e), "expected": ""}])
+        })
+
+def main():
+    print("Runner started. Waiting for jobs…")
+    while True:
+        run_once()
+
+if __name__ == "__main__":
+    print("Runner starting up…")
+    judge.ensure_base_image()
+    main()
