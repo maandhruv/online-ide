@@ -1,0 +1,25 @@
+# Node / Next.js
+frontend/node_modules/
+frontend/.next/
+frontend/.env.local
+frontend/.env
+
+# Python / FastAPI
+backend/__pycache__/
+backend/*.pyc
+backend/.env
+backend/.pytest_cache/
+backend/.mypy_cache/
+
+# Docker
+*.log
+docker-compose.override.yml
+
+# OS
+.DS_Store
+Thumbs.db
+
+# venvs / Conda (if you ever run backend locally without Docker)
+.venv/
+env/
+venv/
