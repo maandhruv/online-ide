@@ -1,0 +1,14 @@
+{
+  "id": "reverse-string",
+  "title": "Reverse String",
+  "statement": "Read one line and print it reversed.",
+  "constraints": "Length <= 1e5",
+  "runner_type": "io",
+  "public_tests": [
+    {"input":"hello\n","output":"olleh\n","timeout_ms":2000},
+    {"input":"abc\n","output":"cba\n","timeout_ms":2000}
+  ],
+  "private_tests": [
+    {"input":"racecar\n","output":"racecar\n","timeout_ms":2000}
+  ]
+}

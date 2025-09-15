@@ -1,0 +1,14 @@
+{
+  "id": "sum-of-n",
+  "title": "Sum of N",
+  "statement": "Read n, then n integers; print their sum.",
+  "constraints": "1 <= n <= 1e5",
+  "runner_type": "io",
+  "public_tests": [
+    {"input":"3\n1 2 3\n","output":"6\n","timeout_ms":2000},
+    {"input":"4\n-1 -1 -1 -1\n","output":"-4\n","timeout_ms":2000}
+  ],
+  "private_tests": [
+    {"input":"1\n1000000000\n","output":"1000000000\n","timeout_ms":2000}
+  ]
+}

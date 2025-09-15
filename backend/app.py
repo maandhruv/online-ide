@@ -1,14 +1,12 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-import json, os, time, uuid, redis
-import judge
+import json, os, uuid, redis, judge
 
 REDIS_URL = os.environ.get("REDIS_URL", "redis://redis:6379/0")
 r = redis.Redis.from_url(REDIS_URL, decode_responses=True)
 
-app = FastAPI(title="DSA IDE API (Queue)")
-
+app = FastAPI(title="DSA IDE API (Queue, Multi-problem)")
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:3000","http://127.0.0.1:3000"],
@@ -16,43 +14,53 @@ app.add_middleware(
 )
 
 class RunBody(BaseModel):
+    problem_id: str
     source_code: str
 
 @app.get("/")
 def root():
-    return {"ok": True, "msg": "DSA IDE API up. Use /problem, /run, /submit, /result/{id}"}
+    return {"ok": True}
 
-@app.get("/problem")
-def get_problem():
-    p = judge.load_problem()
+@app.get("/problems")
+def get_problems():
+    return {"items": judge.list_problems()}
+
+@app.get("/problems/{pid}")
+def get_problem(pid: str):
+    try:
+        p = judge.load_problem(pid)
+    except Exception:
+        raise HTTPException(status_code=404, detail="Problem not found")
     return {
         "id": p["id"], "title": p["title"],
         "statement": p["statement"], "constraints": p["constraints"],
         "public_count": len(p["public_tests"])
     }
 
-def enqueue_job(kind: str, source_code: str) -> str:
+def enqueue_job(kind: str, problem_id: str, source_code: str) -> str:
     sub_id = str(uuid.uuid4())
-    job = {
-        "id": sub_id,
-        "kind": kind,              # "public" or "all"
-        "source_code": source_code
-    }
-    # result key defaults to PENDING
     r.hset(f"result:{sub_id}", mapping={"status": "PENDING"})
-    # push to queue (FIFO)
-    r.rpush("queue:runs", json.dumps(job))
+    r.rpush("queue:runs", json.dumps({
+        "id": sub_id, "kind": kind,
+        "problem_id": problem_id,
+        "source_code": source_code
+    }))
     return sub_id
 
 @app.post("/run")
 def run_public(body: RunBody):
-    sub_id = enqueue_job("public", body.source_code)
-    return {"submission_id": sub_id}
+    # validate problem exists quickly
+    try: judge.load_problem(body.problem_id)
+    except Exception:
+        raise HTTPException(status_code=404, detail="Problem not found")
+    return {"submission_id": enqueue_job("public", body.problem_id, body.source_code)}
 
 @app.post("/submit")
 def run_all(body: RunBody):
-    sub_id = enqueue_job("all", body.source_code)
-    return {"submission_id": sub_id}
+    try: judge.load_problem(body.problem_id)
+    except Exception:
+        raise HTTPException(status_code=404, detail="Problem not found")
+    return {"submission_id": enqueue_job("all", body.problem_id, body.source_code)}
 
 @app.get("/result/{submission_id}")
 def get_result(submission_id: str):
@@ -60,11 +68,9 @@ def get_result(submission_id: str):
     if not r.exists(key):
         return {"status": "UNKNOWN", "error": "No such submission id"}
     data = r.hgetall(key)
-    # If finished, payload will contain json fields: verdict, results
     resp = {"status": data.get("status", "PENDING")}
     if data.get("status") == "DONE":
         resp["verdict"] = data.get("verdict")
-        # results stored as JSON string to keep it simple
         if "results" in data:
             resp["results"] = json.loads(data["results"])
     return resp

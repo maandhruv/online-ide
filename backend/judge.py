@@ -103,7 +103,32 @@ def judge_io(source_code: str, tests: list) -> dict:
         })
     return {"verdict": "ACCEPTED" if all_pass else "REJECTED", "results": results}
 
-def load_problem():
-    path = os.path.join(os.path.dirname(__file__), "problems", "two_sum.json")
+# ... keep the rest of judge.py exactly as we finalized earlier ...
+
+def load_problem(problem_id: str):
+    """Load a problem JSON by id from ./problems directory."""
+    base = os.path.join(os.path.dirname(__file__), "problems")
+    path = os.path.join(base, f"{problem_id}.json")
+    if not os.path.exists(path):
+        # allow mapping by slug filenames that may contain dashes already
+        # also try to find by scanning
+        for name in os.listdir(base):
+            if name.endswith(".json"):
+                with open(os.path.join(base, name), "r", encoding="utf-8") as f:
+                    data = json.load(f)
+                    if data.get("id") == problem_id:
+                        return data
+        raise FileNotFoundError(f"Problem not found: {problem_id}")
     with open(path, "r", encoding="utf-8") as f:
         return json.load(f)
+
+def list_problems():
+    base = os.path.join(os.path.dirname(__file__), "problems")
+    items = []
+    for name in sorted(os.listdir(base)):
+        if name.endswith(".json"):
+            with open(os.path.join(base, name), "r", encoding="utf-8") as f:
+                p = json.load(f)
+                items.append({"id": p["id"], "title": p["title"]})
+    return items
+

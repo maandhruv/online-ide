@@ -1,0 +1,14 @@
+{
+  "id": "fibonacci-k",
+  "title": "K-th Fibonacci (Iterative)",
+  "statement": "Read k (0-indexed) and print F_k where F_0=0, F_1=1.",
+  "constraints": "0 <= k <= 1e6 (use O(1) memory)",
+  "runner_type": "io",
+  "public_tests": [
+    {"input":"0\n","output":"0\n","timeout_ms":2000},
+    {"input":"7\n","output":"13\n","timeout_ms":2000}
+  ],
+  "private_tests": [
+    {"input":"1\n","output":"1\n","timeout_ms":2000}
+  ]
+}
