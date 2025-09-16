@@ -5,11 +5,14 @@ services:
       dockerfile: Dockerfile
     container_name: dsa-ide-api
     environment:
-      - REDIS_URL=redis://redis:6379/0
+      - REDIS_URL=${REDIS_URL:-redis://redis:6379/0}
+      - ALLOWED_ORIGINS=${ALLOWED_ORIGINS:-http://localhost:3000,http://127.0.0.1:3000}
     ports:
       - "8000:8000"
     depends_on:
       - redis
+    env_file:
+      - .env
 
   runner:
     build:
@@ -17,13 +20,15 @@ services:
       dockerfile: Dockerfile
     container_name: dsa-ide-runner
     environment:
-      - REDIS_URL=redis://redis:6379/0
+      - REDIS_URL=${REDIS_URL:-redis://redis:6379/0}
     # the runner needs Docker access to spawn sandbox containers
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     command: ["python", "runner.py"]
     depends_on:
       - redis
+    env_file:
+      - .env
 
   redis:
     image: redis:7

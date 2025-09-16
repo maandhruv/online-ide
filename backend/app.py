@@ -2,14 +2,18 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import json, os, uuid, redis, judge
+import config
 
-REDIS_URL = os.environ.get("REDIS_URL", "redis://redis:6379/0")
-r = redis.Redis.from_url(REDIS_URL, decode_responses=True)
+r = redis.Redis.from_url(config.REDIS_URL, decode_responses=True)
 
 app = FastAPI(title="DSA IDE API (Queue, Multi-problem)")
+
+# Get allowed origins from environment or use defaults
+FRONTEND_URLS = os.environ.get("ALLOWED_ORIGINS", "http://localhost:3000,http://127.0.0.1:3000").split(",")
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000","http://127.0.0.1:3000"],
+    allow_origins=FRONTEND_URLS,
     allow_credentials=True, allow_methods=["*"], allow_headers=["*"],
 )
 
