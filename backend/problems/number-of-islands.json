@@ -1,0 +1,16 @@
+{
+  "id": "number-of-islands",
+  "title": "Number of Islands",
+  "statement": "Given a 2D grid where '1' represents land and '0' represents water, count the number of islands. An island is surrounded by water and is formed by connecting adjacent lands horizontally or vertically.\n\nInput: First line contains n (rows) and m (columns). Next n lines contain m characters each (0 or 1).",
+  "constraints": "1 <= n, m <= 300",
+  "runner_type": "io",
+  "public_tests": [
+    {"input":"4 5\n11000\n11000\n00100\n00011\n","output":"3\n","timeout_ms":2000},
+    {"input":"3 3\n111\n010\n111\n","output":"1\n","timeout_ms":2000}
+  ],
+  "private_tests": [
+    {"input":"1 1\n1\n","output":"1\n","timeout_ms":2000},
+    {"input":"5 4\n1101\n1001\n0001\n0011\n0000\n","output":"2\n","timeout_ms":2000},
+    {"input":"3 3\n000\n000\n000\n","output":"0\n","timeout_ms":2000}
+  ]
+}

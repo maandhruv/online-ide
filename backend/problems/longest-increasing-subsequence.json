@@ -1,0 +1,16 @@
+{
+  "id": "longest-increasing-subsequence",
+  "title": "Longest Increasing Subsequence",
+  "statement": "Find the length of the longest strictly increasing subsequence in an array of integers.\n\nInput: First line contains n (array length). Second line contains n space-separated integers.",
+  "constraints": "1 <= n <= 2500, -10^4 <= array elements <= 10^4",
+  "runner_type": "io",
+  "public_tests": [
+    {"input":"8\n10 9 2 5 3 7 101 18\n","output":"4\n","timeout_ms":2000},
+    {"input":"6\n0 1 0 3 2 3\n","output":"4\n","timeout_ms":2000}
+  ],
+  "private_tests": [
+    {"input":"1\n7\n","output":"1\n","timeout_ms":2000},
+    {"input":"7\n7 7 7 7 7 7 7\n","output":"1\n","timeout_ms":2000},
+    {"input":"9\n1 3 6 7 9 4 10 5 6\n","output":"6\n","timeout_ms":2000}
+  ]
+}

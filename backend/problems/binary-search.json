@@ -1,0 +1,16 @@
+{
+  "id": "binary-search",
+  "title": "Binary Search Implementation",
+  "statement": "Implement binary search to find the index of a target element in a sorted array. Return -1 if the element is not found.\n\nInput: First line contains n (array length) and target. Second line contains n space-separated integers (the sorted array).",
+  "constraints": "1 <= n <= 10^5, -10^9 <= array elements, target <= 10^9",
+  "runner_type": "io",
+  "public_tests": [
+    {"input":"5 9\n1 2 3 9 12\n","output":"3\n","timeout_ms":2000},
+    {"input":"6 7\n1 2 3 4 5 6\n","output":"-1\n","timeout_ms":2000}
+  ],
+  "private_tests": [
+    {"input":"1 5\n5\n","output":"0\n","timeout_ms":2000},
+    {"input":"10 8\n1 2 3 4 5 6 7 8 9 10\n","output":"7\n","timeout_ms":2000},
+    {"input":"7 0\n-5 -3 -1 0 2 4 6\n","output":"3\n","timeout_ms":2000}
+  ]
+}
